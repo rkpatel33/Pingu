@@ -23,17 +23,49 @@ extension UserDefaults {
     }
     
     var launchAtLogin: Bool {
-        
+
         get {
             return bool(forKey: #function)
         }
-        
+
         set {
             set(newValue, forKey: #function)
         }
-        
+
     }
-    
+
+    var pingEnabled: Bool {
+
+        get {
+            // Default to true if not set
+            if object(forKey: #function) == nil {
+                return true
+            }
+            return bool(forKey: #function)
+        }
+
+        set {
+            set(newValue, forKey: #function)
+        }
+
+    }
+
+    var speedEnabled: Bool {
+
+        get {
+            // Default to true if not set
+            if object(forKey: #function) == nil {
+                return true
+            }
+            return bool(forKey: #function)
+        }
+
+        set {
+            set(newValue, forKey: #function)
+        }
+
+    }
+
 }
 
 

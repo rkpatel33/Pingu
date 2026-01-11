@@ -10,52 +10,67 @@ import Cocoa
 import ServiceManagement
 
 class Pingu {
-    
+
     // MARK: - Private Properties
-    
+
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private var preferencesPopover: NSPopover?
     private var eventMonitor: EventMonitor?
     private var savedHosts: SavedHosts
     private var pingService: PingService
+    private var speedService: SpeedService
     private var chartView: ChartView
     
     // MARK: - Lifecycle
-    
+
     init() {
-        
+
         self.chartView = ChartView()
         self.pingService = PingService()
+        self.speedService = SpeedService()
         self.savedHosts = SavedHosts.load(fromStore: UserDefaults.standard)
-        
+
+        // Load toggle states from UserDefaults
+        chartView.pingEnabled = UserDefaults.standard.pingEnabled
+        chartView.speedEnabled = UserDefaults.standard.speedEnabled
+
         if let selectedHost = savedHosts.selectedHost {
-            
-            startPinging(host: selectedHost)
-        
+
+            if UserDefaults.standard.pingEnabled {
+                startPinging(host: selectedHost)
+            }
+
         } else {
-            
+
             let defaultHost = Host(host: "www.google.com", interval: .seconds(1))
-            
+
             savedHosts.add(defaultHost)
             savedHosts.save(toStore: UserDefaults.standard)
-            
-            startPinging(host: defaultHost)
-            
+
+            if UserDefaults.standard.pingEnabled {
+                startPinging(host: defaultHost)
+            }
+
         }
-        
+
+        // Start speed testing if enabled
+        if UserDefaults.standard.speedEnabled {
+            startSpeedTesting()
+        }
+
         configureMenu()
-        
+
         statusItem.button?.addSubview(chartView)
         statusItem.length = chartView.desiredWidth
-        
+
         eventMonitor = EventMonitor(mask: .leftMouseDown) { [weak self] event in
 
             if self?.preferencesPopover?.isShown ?? false {
                 self?.hidePreferencesPopover()
             }
-            
+
         }
-        
+
     }
     
     // MARK: - Private Properties
@@ -81,49 +96,68 @@ class Pingu {
         }
         
         if pingService.isPinging {
-            
+
             let item = NSMenuItem(title: "Pause", action: #selector(self.didSelectStopPinging), keyEquivalent: "")
             item.target = self
-            
+
             menu.addItem(item)
             menu.addItem(.separator())
-        
+
         } else {
-            
+
             if let _ = savedHosts.selectedHost {
-                
+
                 let item = NSMenuItem(title: "Resume", action: #selector(self.didSelectStartPinging), keyEquivalent: "")
                 item.target = self
-                
+
                 menu.addItem(item)
                 menu.addItem(.separator())
-                
+
             }
-            
+
         }
-        
+
         let preferencesMenuItem = NSMenuItem(title: "Add host...",
                                              action: #selector(didSelectPrefencesMenuItem),
                                              keyEquivalent: "")
         preferencesMenuItem.target = self
-        
+
+        menu.addItem(preferencesMenuItem)
+        menu.addItem(.separator())
+
+        // Toggle menu items
+        let pingToggle = NSMenuItem(title: "Ping Testing",
+                                    action: #selector(didSelectPingToggle),
+                                    keyEquivalent: "")
+        pingToggle.target = self
+        pingToggle.state = UserDefaults.standard.pingEnabled ? .on : .off
+
+        let speedToggle = NSMenuItem(title: "Speed Testing",
+                                     action: #selector(didSelectSpeedToggle),
+                                     keyEquivalent: "")
+        speedToggle.target = self
+        speedToggle.state = UserDefaults.standard.speedEnabled ? .on : .off
+
+        menu.addItem(pingToggle)
+        menu.addItem(speedToggle)
+        menu.addItem(.separator())
+
         let launchAtLogin = NSMenuItem(title: "Launch at login",
                                              action: #selector(didSelectLaunchAtLogin),
                                              keyEquivalent: "")
         launchAtLogin.target = self
         launchAtLogin.state = UserDefaults.standard.launchAtLogin ? .on : .off
-        
+
         let quitMenuItem = NSMenuItem(title: "Quit",
                                        action: #selector(didSelectQuitMenuItem),
                                        keyEquivalent: "")
         quitMenuItem.target = self
-        
-        menu.addItem(preferencesMenuItem)
+
         menu.addItem(launchAtLogin)
         menu.addItem(quitMenuItem)
-        
+
         statusItem.menu = menu
-    
+
     }
     
     // MARK: - Private methods
@@ -164,11 +198,31 @@ class Pingu {
     }
     
     fileprivate func stopPinging() {
-        
+
         pingService.stopPinging()
         configureMenu()
         chartView.setPausedState(true)
-        
+
+    }
+
+    fileprivate func startSpeedTesting() {
+
+        speedService.observer = { [weak self] speedResult in
+            DispatchQueue.main.async {
+                self?.chartView.addSpeedResult(speedResult)
+                self?.statusItem.length = self?.chartView.desiredWidth ?? 0
+            }
+        }
+
+        speedService.startSpeedTest()
+
+    }
+
+    fileprivate func stopSpeedTesting() {
+
+        speedService.stopSpeedTest()
+        chartView.setSpeedPausedState(true)
+
     }
     
     // MARK: - Selectors
@@ -206,16 +260,56 @@ class Pingu {
     }
     
     @objc fileprivate func didSelectLaunchAtLogin() {
-        
+
         UserDefaults.standard.launchAtLogin.toggle()
         SMLoginItemSetEnabled(pinguLauncherBundleId as CFString, UserDefaults.standard.launchAtLogin)
-        
+
         print("Launch at login: \(UserDefaults.standard.launchAtLogin)")
-        
+
         configureMenu()
-        
+
     }
-    
+
+    @objc fileprivate func didSelectPingToggle() {
+
+        UserDefaults.standard.pingEnabled.toggle()
+        let enabled = UserDefaults.standard.pingEnabled
+
+        chartView.pingEnabled = enabled
+
+        if enabled {
+            if let selectedHost = savedHosts.selectedHost {
+                startPinging(host: selectedHost)
+            }
+        } else {
+            pingService.stopPinging()
+            chartView.resetPing()
+        }
+
+        statusItem.length = chartView.desiredWidth
+        configureMenu()
+
+    }
+
+    @objc fileprivate func didSelectSpeedToggle() {
+
+        UserDefaults.standard.speedEnabled.toggle()
+        let enabled = UserDefaults.standard.speedEnabled
+
+        chartView.speedEnabled = enabled
+
+        if enabled {
+            startSpeedTesting()
+        } else {
+            stopSpeedTesting()
+            chartView.resetSpeed()
+        }
+
+        statusItem.length = chartView.desiredWidth
+        configureMenu()
+
+    }
+
 }
 
 // MARK: - PreferencesViewControllerDelegate

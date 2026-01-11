@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		288D3FAD5C41A37FE2B629FE /* SpeedService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9573FC91DACE3FAB74B53108 /* SpeedService.swift */; };
 		B1228913243630A300FACD69 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1228912243630A300FACD69 /* AppDelegate.swift */; };
 		B1228915243630A300FACD69 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1228914243630A300FACD69 /* Assets.xcassets */; };
 		B1228918243630A300FACD69 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B1228916243630A300FACD69 /* MainMenu.xib */; };
@@ -34,6 +35,7 @@
 		B1E5A2E12439FE3400514EB3 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B1E5A2DF2439FE3400514EB3 /* MainMenu.xib */; };
 		B1E5A2E82439FEF000514EB3 /* PinguLauncher.app in Copy launch helper */ = {isa = PBXBuildFile; fileRef = B1E5A2D92439FE3300514EB3 /* PinguLauncher.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B1E5A2EB2439FF2500514EB3 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1E5A2EA2439FF2500514EB3 /* ServiceManagement.framework */; };
+		E398E45579E4316BFA3F9CFD /* SpeedResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E206C61F810897DAA9FB9EB /* SpeedResult.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -51,6 +53,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3E206C61F810897DAA9FB9EB /* SpeedResult.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpeedResult.swift; sourceTree = "<group>"; };
+		9573FC91DACE3FAB74B53108 /* SpeedService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpeedService.swift; sourceTree = "<group>"; };
 		B122890F243630A300FACD69 /* Pingu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pingu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1228912243630A300FACD69 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B1228914243630A300FACD69 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -171,6 +175,7 @@
 			children = (
 				B1228928243637D200FACD69 /* PingService */,
 				B122892E2436421200FACD69 /* EventMonitor.swift */,
+				B7E8153218D49E692AF03CF4 /* SpeedService */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -235,6 +240,7 @@
 				B175895A243668ED0050C05E /* PingInterval.swift */,
 				B175895F24374BA30050C05E /* Host.swift */,
 				B1758961243750940050C05E /* SavedHosts.swift */,
+				3E206C61F810897DAA9FB9EB /* SpeedResult.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -265,6 +271,15 @@
 				B1E5A2EA2439FF2500514EB3 /* ServiceManagement.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B7E8153218D49E692AF03CF4 /* SpeedService */ = {
+			isa = PBXGroup;
+			children = (
+				9573FC91DACE3FAB74B53108 /* SpeedService.swift */,
+			);
+			name = SpeedService;
+			path = SpeedService;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -392,6 +407,8 @@
 				B1477DF72438A935005BC84B /* Rescale.swift in Sources */,
 				B1CD487F243A038000AED012 /* Shared.swift in Sources */,
 				B15C173424379C0000F08119 /* ChartBarView.swift in Sources */,
+				E398E45579E4316BFA3F9CFD /* SpeedResult.swift in Sources */,
+				288D3FAD5C41A37FE2B629FE /* SpeedService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

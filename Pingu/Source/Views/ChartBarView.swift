@@ -75,13 +75,59 @@ class ChartBarView: NSView {
     }
     
     public func reset() {
-        
+
         snp.updateConstraints { m in
             m.height.equalTo(0)
         }
-        
+
         layer?.backgroundColor = .white
-        
+
     }
-    
+
+    // MARK: - Speed Configuration
+
+    public func configure(with result: SpeedResult, avgSpeed: Double) {
+
+        switch result {
+
+        case .speedInMbps(let mbps):
+
+            // Scale speed to bar height (0-12px range)
+            let maxScale = max(avgSpeed * 2, 50) // At least 50 Mbps scale
+            let scaledValue = Rescale(from: (0, Float(maxScale)), to: (1, 12)).rescale(Float(mbps))
+
+            snp.updateConstraints { m in
+                m.height.equalTo(min(scaledValue, 12))
+            }
+
+            // Color thresholds for speed (inverse of latency - higher is better)
+            switch mbps {
+            case 25...:
+                // Good speed (green) - use label color for consistency
+                layer?.backgroundColor = NSColor.labelColor.cgColor
+            case 10..<25:
+                // Moderate speed (amber)
+                layer?.backgroundColor = NSColor(named: NSColor.Name("highPingColor"))?.cgColor
+            default:
+                // Slow speed (red)
+                layer?.backgroundColor = NSColor(named: NSColor.Name("veryHighPingColor"))?.cgColor
+            }
+
+        case .timeout, .error:
+
+            snp.updateConstraints { m in
+                m.height.equalTo(0)
+            }
+
+        case .rateLimited:
+            // Show small bar with amber color for rate limited
+            snp.updateConstraints { m in
+                m.height.equalTo(2)
+            }
+            layer?.backgroundColor = NSColor(named: NSColor.Name("highPingColor"))?.cgColor
+
+        }
+
+    }
+
 }
