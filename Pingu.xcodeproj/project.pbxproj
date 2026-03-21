@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		288D3FAD5C41A37FE2B629FE /* SpeedService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9573FC91DACE3FAB74B53108 /* SpeedService.swift */; };
+		6EDB4836941AF5CF4AA5C112 /* MonitorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8447D0B1A55432C6B85BCB /* MonitorData.swift */; };
 		B1228913243630A300FACD69 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1228912243630A300FACD69 /* AppDelegate.swift */; };
 		B1228915243630A300FACD69 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1228914243630A300FACD69 /* Assets.xcassets */; };
 		B1228918243630A300FACD69 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B1228916243630A300FACD69 /* MainMenu.xib */; };
@@ -21,6 +22,7 @@
 		B1477DFB2438C0D5005BC84B /* HostMenuItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1477DFA2438C0D5005BC84B /* HostMenuItemView.swift */; };
 		B1477DFD2438C0E2005BC84B /* HostMenuItemView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B1477DFC2438C0E2005BC84B /* HostMenuItemView.xib */; };
 		B1477DFF2438DE93005BC84B /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1477DFE2438DE93005BC84B /* Data+Extensions.swift */; };
+		B14F4C5AA3145F05BCEA2C6D /* ChartPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0954E63A4E8177CACF4775B /* ChartPopoverView.swift */; };
 		B15C172D2437639000F08119 /* HostMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B15C172C2437639000F08119 /* HostMenuItem.swift */; };
 		B15C172F24377B2000F08119 /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B15C172E24377B2000F08119 /* ChartView.swift */; };
 		B15C1732243784AF00F08119 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = B15C1731243784AF00F08119 /* SnapKit */; };
@@ -54,6 +56,7 @@
 
 /* Begin PBXFileReference section */
 		3E206C61F810897DAA9FB9EB /* SpeedResult.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpeedResult.swift; sourceTree = "<group>"; };
+		6F8447D0B1A55432C6B85BCB /* MonitorData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MonitorData.swift; path = Pingu/Source/Models/MonitorData.swift; sourceTree = SOURCE_ROOT; };
 		9573FC91DACE3FAB74B53108 /* SpeedService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpeedService.swift; sourceTree = "<group>"; };
 		B122890F243630A300FACD69 /* Pingu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pingu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1228912243630A300FACD69 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -85,6 +88,7 @@
 		B1E5A2E22439FE3400514EB3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B1E5A2E32439FE3400514EB3 /* PinguLauncher.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PinguLauncher.entitlements; sourceTree = "<group>"; };
 		B1E5A2EA2439FF2500514EB3 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
+		C0954E63A4E8177CACF4775B /* ChartPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ChartPopoverView.swift; path = Pingu/Source/Views/ChartPopoverView.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,6 +216,7 @@
 				B1477DF92438C0C7005BC84B /* HostMenuItemView */,
 				B15C172E24377B2000F08119 /* ChartView.swift */,
 				B15C173324379C0000F08119 /* ChartBarView.swift */,
+				C0954E63A4E8177CACF4775B /* ChartPopoverView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -241,6 +246,7 @@
 				B175895F24374BA30050C05E /* Host.swift */,
 				B1758961243750940050C05E /* SavedHosts.swift */,
 				3E206C61F810897DAA9FB9EB /* SpeedResult.swift */,
+				6F8447D0B1A55432C6B85BCB /* MonitorData.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -409,6 +415,8 @@
 				B15C173424379C0000F08119 /* ChartBarView.swift in Sources */,
 				E398E45579E4316BFA3F9CFD /* SpeedResult.swift in Sources */,
 				288D3FAD5C41A37FE2B629FE /* SpeedService.swift in Sources */,
+				6EDB4836941AF5CF4AA5C112 /* MonitorData.swift in Sources */,
+				B14F4C5AA3145F05BCEA2C6D /* ChartPopoverView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

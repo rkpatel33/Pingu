@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import SwiftUI
 import ServiceManagement
 
 class Pingu {
@@ -15,11 +16,13 @@ class Pingu {
 
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private var preferencesPopover: NSPopover?
+    private var chartPopover: NSPopover?
     private var eventMonitor: EventMonitor?
     private var savedHosts: SavedHosts
     private var pingService: PingService
     private var speedService: SpeedService
     private var chartView: ChartView
+    private var monitorData = MonitorData()
     
     // MARK: - Lifecycle
 
@@ -58,10 +61,13 @@ class Pingu {
             startSpeedTesting()
         }
 
-        configureMenu()
-
         statusItem.button?.addSubview(chartView)
         statusItem.length = chartView.desiredWidth
+
+        // Left-click: chart popover, right-click: settings menu
+        statusItem.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
+        statusItem.button?.target = self
+        statusItem.button?.action = #selector(statusItemClicked(_:))
 
         eventMonitor = EventMonitor(mask: .leftMouseDown) { [weak self] event in
 
@@ -75,26 +81,26 @@ class Pingu {
     
     // MARK: - Private Properties
     
-    fileprivate func configureMenu() {
-        
+    fileprivate func buildMenu() -> NSMenu {
+
         let menu = NSMenu()
-        
+
         if !savedHosts.hosts.isEmpty {
-            
+
             for host in savedHosts.hosts {
-                
+
                 let hostItem = HostMenuItem(host: host, action: #selector(self.didSelectHostItem(_:)))
                 hostItem.target = self
                 hostItem.state = host.selected ? .on : .off
-                
+
                 menu.addItem(hostItem)
-                
+
             }
-            
+
             menu.addItem(.separator())
-            
+
         }
-        
+
         if pingService.isPinging {
 
             let item = NSMenuItem(title: "Pause", action: #selector(self.didSelectStopPinging), keyEquivalent: "")
@@ -125,7 +131,6 @@ class Pingu {
         menu.addItem(preferencesMenuItem)
         menu.addItem(.separator())
 
-        // Toggle menu items
         let pingToggle = NSMenuItem(title: "Ping Testing",
                                     action: #selector(didSelectPingToggle),
                                     keyEquivalent: "")
@@ -156,7 +161,7 @@ class Pingu {
         menu.addItem(launchAtLogin)
         menu.addItem(quitMenuItem)
 
-        statusItem.menu = menu
+        return menu
 
     }
     
@@ -190,6 +195,7 @@ class Pingu {
             
             DispatchQueue.main.sync {
                 self?.chartView.addResult(pingResult)
+                self?.monitorData.addPing(pingResult)
                 self?.statusItem.length = self?.chartView.desiredWidth ?? 0
             }
             
@@ -200,7 +206,6 @@ class Pingu {
     fileprivate func stopPinging() {
 
         pingService.stopPinging()
-        configureMenu()
         chartView.setPausedState(true)
 
     }
@@ -210,6 +215,7 @@ class Pingu {
         speedService.observer = { [weak self] speedResult in
             DispatchQueue.main.async {
                 self?.chartView.addSpeedResult(speedResult)
+                self?.monitorData.addSpeed(speedResult)
                 self?.statusItem.length = self?.chartView.desiredWidth ?? 0
             }
         }
@@ -225,8 +231,46 @@ class Pingu {
 
     }
     
+    // MARK: - Click Handling
+
+    @objc fileprivate func statusItemClicked(_ sender: Any?) {
+        guard let event = NSApp.currentEvent else { return }
+        if event.type == .rightMouseUp {
+            showMenu()
+        } else {
+            toggleChartPopover()
+        }
+    }
+
+    fileprivate func toggleChartPopover() {
+        if chartPopover?.isShown == true {
+            chartPopover?.close()
+            chartPopover = nil
+            return
+        }
+
+        let popover = NSPopover()
+        popover.contentViewController = NSHostingController(
+            rootView: ChartPopoverView(data: monitorData)
+        )
+        popover.behavior = .transient
+        popover.contentSize = NSSize(width: 560, height: 280)
+
+        if let button = statusItem.button {
+            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+        }
+        chartPopover = popover
+    }
+
+    fileprivate func showMenu() {
+        let menu = buildMenu()
+        if let button = statusItem.button {
+            menu.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.height + 5), in: button)
+        }
+    }
+
     // MARK: - Selectors
-    
+
     @objc fileprivate func didSelectPrefencesMenuItem() {
         preferencesPopover?.isShown ?? false ? hidePreferencesPopover() : showPreferencesPopover()
     }
@@ -242,7 +286,6 @@ class Pingu {
         
         startPinging(host: item.host)
         chartView.reset()
-        configureMenu()
         
     }
     
@@ -255,7 +298,6 @@ class Pingu {
         guard let selectedHost = savedHosts.selectedHost else { return }
         
         startPinging(host: selectedHost)
-        configureMenu()
         
     }
     
@@ -266,7 +308,6 @@ class Pingu {
 
         print("Launch at login: \(UserDefaults.standard.launchAtLogin)")
 
-        configureMenu()
 
     }
 
@@ -287,7 +328,6 @@ class Pingu {
         }
 
         statusItem.length = chartView.desiredWidth
-        configureMenu()
 
     }
 
@@ -306,7 +346,6 @@ class Pingu {
         }
 
         statusItem.length = chartView.desiredWidth
-        configureMenu()
 
     }
 
@@ -328,7 +367,6 @@ extension Pingu: PreferencesViewControllerDelegate {
         
         startPinging(host: h)
         
-        configureMenu()
         hidePreferencesPopover()
         
     }
