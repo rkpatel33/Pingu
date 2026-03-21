@@ -18,8 +18,9 @@ class ChartBarView: NSView {
     init() {
         
         super.init(frame: .zero)
-        
+
         wantsLayer = true
+        layer?.cornerRadius = 1
         layer?.backgroundColor = NSColor.labelColor.cgColor
         
     }
@@ -55,9 +56,9 @@ class ChartBarView: NSView {
             case 0..<80:
                 layer?.backgroundColor = NSColor.labelColor.cgColor
             case 80..<150:
-                layer?.backgroundColor = NSColor(named: NSColor.Name("highPingColor"))?.cgColor
-            default :
-                layer?.backgroundColor = NSColor(named: NSColor.Name("veryHighPingColor"))?.cgColor
+                layer?.backgroundColor = NSColor.systemOrange.cgColor
+            default:
+                layer?.backgroundColor = NSColor.systemRed.cgColor
             }
             
         
@@ -100,17 +101,13 @@ class ChartBarView: NSView {
                 m.height.equalTo(min(scaledValue, 12))
             }
 
-            // Color thresholds for speed (inverse of latency - higher is better)
             switch mbps {
             case 25...:
-                // Good speed (green) - use label color for consistency
                 layer?.backgroundColor = NSColor.labelColor.cgColor
             case 10..<25:
-                // Moderate speed (amber)
-                layer?.backgroundColor = NSColor(named: NSColor.Name("highPingColor"))?.cgColor
+                layer?.backgroundColor = NSColor.systemOrange.cgColor
             default:
-                // Slow speed (red)
-                layer?.backgroundColor = NSColor(named: NSColor.Name("veryHighPingColor"))?.cgColor
+                layer?.backgroundColor = NSColor.systemRed.cgColor
             }
 
         case .timeout, .error:
@@ -120,11 +117,10 @@ class ChartBarView: NSView {
             }
 
         case .rateLimited:
-            // Show small bar with amber color for rate limited
             snp.updateConstraints { m in
                 m.height.equalTo(2)
             }
-            layer?.backgroundColor = NSColor(named: NSColor.Name("highPingColor"))?.cgColor
+            layer?.backgroundColor = NSColor.systemOrange.cgColor
 
         }
 

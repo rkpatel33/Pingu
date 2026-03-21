@@ -16,7 +16,11 @@ class ChartView: NSView {
     // MARK: - Public Properties
 
     public var desiredWidth: CGFloat {
-        var width: CGFloat = 0
+        var width: CGFloat = iconSize
+
+        if pingEnabled || speedEnabled {
+            width += iconMargin
+        }
 
         if pingEnabled {
             width += pingBaseLineViewWidth + pingLabelMargin + pingLabel.frame.width
@@ -24,7 +28,7 @@ class ChartView: NSView {
 
         if speedEnabled {
             if pingEnabled {
-                width += separatorMargin * 2 + separatorWidth
+                width += sectionGap
             }
             width += speedBaseLineViewWidth + speedLabelMargin + speedLabel.frame.width
         }
@@ -51,21 +55,24 @@ class ChartView: NSView {
     fileprivate var pingBaselineView: NSView
     fileprivate var pingChartBarViews: [ChartBarView] = []
     fileprivate var pingResults: [PingResult] = Array(repeating: .responseInMilliseconds(0), count: 6)
-    fileprivate let pingLabelMargin: CGFloat = 6
-    fileprivate let pingBaseLineViewWidth: CGFloat = 22
+    fileprivate let pingLabelMargin: CGFloat = 4
+    fileprivate let pingBaseLineViewWidth: CGFloat = 23
 
     // Speed chart
     fileprivate var speedLabel: NSTextField
     fileprivate var speedBaselineView: NSView
     fileprivate var speedChartBarViews: [ChartBarView] = []
     fileprivate var speedResults: [SpeedResult] = Array(repeating: .speedInMbps(0), count: 6)
-    fileprivate let speedLabelMargin: CGFloat = 6
-    fileprivate let speedBaseLineViewWidth: CGFloat = 22
+    fileprivate let speedLabelMargin: CGFloat = 4
+    fileprivate let speedBaseLineViewWidth: CGFloat = 23
 
-    // Separator
-    fileprivate var separatorView: NSView
-    fileprivate let separatorWidth: CGFloat = 1
-    fileprivate let separatorMargin: CGFloat = 8
+    // Spacing between ping and speed sections
+    fileprivate let sectionGap: CGFloat = 6
+
+    // Menu bar icon (always visible)
+    fileprivate var iconView: NSImageView
+    fileprivate let iconSize: CGFloat = 16
+    fileprivate let iconMargin: CGFloat = 6
 
     // Legacy aliases for compatibility
     fileprivate var label: NSTextField { pingLabel }
@@ -75,8 +82,8 @@ class ChartView: NSView {
         get { pingResults }
         set { pingResults = newValue }
     }
-    fileprivate let baseLineViewMargin: CGFloat = 6
-    fileprivate let baseLineViewWidth: CGFloat = 22
+    fileprivate let baseLineViewMargin: CGFloat = 4
+    fileprivate let baseLineViewWidth: CGFloat = 23
 
     fileprivate var avgResponseTime: Float {
 
@@ -114,7 +121,7 @@ class ChartView: NSView {
         pingBaselineView = NSView()
         speedLabel = NSTextField()
         speedBaselineView = NSView()
-        separatorView = NSView()
+        iconView = NSImageView()
 
         super.init(frame: NSRect(x: 0, y: 0, width: 120, height: 22))
 
@@ -133,7 +140,6 @@ class ChartView: NSView {
         super.updateLayer()
         pingBaselineView.layer?.backgroundColor = NSColor.secondaryLabelColor.cgColor
         speedBaselineView.layer?.backgroundColor = NSColor.secondaryLabelColor.cgColor
-        separatorView.layer?.backgroundColor = NSColor.tertiaryLabelColor.cgColor
 
     }
     
@@ -206,12 +212,25 @@ class ChartView: NSView {
 
     fileprivate func configureViews() {
 
+        // Configure menu bar icon
+        iconView.image = ChartView.makeMenuBarIcon()
+        iconView.imageScaling = .scaleNone
+        addSubview(iconView)
+
+        iconView.snp.makeConstraints { m in
+            m.width.height.equalTo(iconSize)
+            m.centerY.equalTo(self)
+            m.left.equalTo(self)
+        }
+
         // Configure ping label
         pingLabel.isBezeled = false
         pingLabel.isBordered = false
         pingLabel.isSelectable = false
         pingLabel.isEditable = false
         pingLabel.backgroundColor = .clear
+        pingLabel.font = NSFont.monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        pingLabel.textColor = NSColor.secondaryLabelColor
 
         addSubview(pingLabel)
 
@@ -224,7 +243,7 @@ class ChartView: NSView {
             m.height.equalTo(1)
             m.width.equalTo(pingBaseLineViewWidth)
             m.bottom.equalTo(self).offset(-4)
-            m.left.equalTo(self)
+            m.left.equalTo(iconView.snp.right).offset(iconMargin)
         }
 
         pingLabel.snp.makeConstraints { m in
@@ -244,16 +263,16 @@ class ChartView: NSView {
                 v.snp.makeConstraints { m in
                     m.left.equalTo(pingBaselineView)
                     m.bottom.equalTo(pingBaselineView).offset(-2)
-                    m.width.equalTo(2)
+                    m.width.equalTo(3)
                     m.height.equalTo(1)
                 }
 
             } else {
 
                 v.snp.makeConstraints { m in
-                    m.left.equalTo(pingChartBarViews[i-1].snp.right).offset(2)
+                    m.left.equalTo(pingChartBarViews[i-1].snp.right).offset(1)
                     m.bottom.equalTo(pingChartBarViews[i-1])
-                    m.width.equalTo(2)
+                    m.width.equalTo(3)
                     m.height.equalTo(1)
                 }
 
@@ -263,23 +282,14 @@ class ChartView: NSView {
 
         }
 
-        // Configure separator
-        separatorView.wantsLayer = true
-        addSubview(separatorView)
-
-        separatorView.snp.makeConstraints { m in
-            m.height.equalTo(14)
-            m.width.equalTo(separatorWidth)
-            m.centerY.equalTo(self)
-            m.left.equalTo(pingLabel.snp.right).offset(separatorMargin)
-        }
-
         // Configure speed label
         speedLabel.isBezeled = false
         speedLabel.isBordered = false
         speedLabel.isSelectable = false
         speedLabel.isEditable = false
         speedLabel.backgroundColor = .clear
+        speedLabel.font = NSFont.monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        speedLabel.textColor = NSColor.secondaryLabelColor
 
         addSubview(speedLabel)
 
@@ -292,7 +302,7 @@ class ChartView: NSView {
             m.height.equalTo(1)
             m.width.equalTo(speedBaseLineViewWidth)
             m.bottom.equalTo(self).offset(-4)
-            m.left.equalTo(separatorView.snp.right).offset(separatorMargin)
+            m.left.equalTo(pingLabel.snp.right).offset(sectionGap)
         }
 
         speedLabel.snp.makeConstraints { m in
@@ -312,16 +322,16 @@ class ChartView: NSView {
                 v.snp.makeConstraints { m in
                     m.left.equalTo(speedBaselineView)
                     m.bottom.equalTo(speedBaselineView).offset(-2)
-                    m.width.equalTo(2)
+                    m.width.equalTo(3)
                     m.height.equalTo(1)
                 }
 
             } else {
 
                 v.snp.makeConstraints { m in
-                    m.left.equalTo(speedChartBarViews[i-1].snp.right).offset(2)
+                    m.left.equalTo(speedChartBarViews[i-1].snp.right).offset(1)
                     m.bottom.equalTo(speedChartBarViews[i-1])
-                    m.width.equalTo(2)
+                    m.width.equalTo(3)
                     m.height.equalTo(1)
                 }
 
@@ -348,44 +358,38 @@ class ChartView: NSView {
         speedBaselineView.isHidden = !speedEnabled
         speedChartBarViews.forEach { $0.isHidden = !speedEnabled }
 
-        // Separator only visible when both are enabled
-        separatorView.isHidden = !(pingEnabled && speedEnabled)
-
-        // Update constraints based on visibility
-        if pingEnabled && !speedEnabled {
-            // Only ping - position at left
+        // Update constraints — charts are always anchored to the right of the icon
+        if pingEnabled && speedEnabled {
             pingBaselineView.snp.remakeConstraints { m in
                 m.height.equalTo(1)
                 m.width.equalTo(pingBaseLineViewWidth)
                 m.bottom.equalTo(self).offset(-4)
-                m.left.equalTo(self)
+                m.left.equalTo(iconView.snp.right).offset(iconMargin)
             }
-        } else if !pingEnabled && speedEnabled {
-            // Only speed - position at left
             speedBaselineView.snp.remakeConstraints { m in
                 m.height.equalTo(1)
                 m.width.equalTo(speedBaseLineViewWidth)
                 m.bottom.equalTo(self).offset(-4)
-                m.left.equalTo(self)
+                m.left.equalTo(pingLabel.snp.right).offset(sectionGap)
             }
             speedLabel.snp.remakeConstraints { m in
                 m.height.equalTo(16)
                 m.centerY.equalTo(self).offset(1.5)
                 m.left.equalTo(speedBaselineView.snp.right).offset(speedLabelMargin)
             }
-        } else if pingEnabled && speedEnabled {
-            // Both enabled - restore normal layout
+        } else if pingEnabled {
             pingBaselineView.snp.remakeConstraints { m in
                 m.height.equalTo(1)
                 m.width.equalTo(pingBaseLineViewWidth)
                 m.bottom.equalTo(self).offset(-4)
-                m.left.equalTo(self)
+                m.left.equalTo(iconView.snp.right).offset(iconMargin)
             }
+        } else if speedEnabled {
             speedBaselineView.snp.remakeConstraints { m in
                 m.height.equalTo(1)
                 m.width.equalTo(speedBaseLineViewWidth)
                 m.bottom.equalTo(self).offset(-4)
-                m.left.equalTo(separatorView.snp.right).offset(separatorMargin)
+                m.left.equalTo(iconView.snp.right).offset(iconMargin)
             }
             speedLabel.snp.remakeConstraints { m in
                 m.height.equalTo(16)
@@ -393,6 +397,7 @@ class ChartView: NSView {
                 m.left.equalTo(speedBaselineView.snp.right).offset(speedLabelMargin)
             }
         }
+        // Both disabled: only the icon shows
 
     }
 
@@ -459,6 +464,12 @@ class ChartView: NSView {
 
     fileprivate func resetSpeedBarViews() {
         speedChartBarViews.forEach { $0.reset() }
+    }
+
+    fileprivate static func makeMenuBarIcon() -> NSImage {
+        let config = NSImage.SymbolConfiguration(pointSize: 13, weight: .medium)
+        let image = NSImage(systemSymbolName: "dot.radiowaves.left.and.right", accessibilityDescription: "Pingu")!
+        return image.withSymbolConfiguration(config)!
     }
 
 }
