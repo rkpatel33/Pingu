@@ -251,7 +251,11 @@ class Pingu {
 
         let popover = NSPopover()
         popover.contentViewController = NSHostingController(
-            rootView: ChartPopoverView(data: monitorData)
+            rootView: ChartPopoverView(
+                data: monitorData,
+                pingEnabled: UserDefaults.standard.pingEnabled,
+                speedEnabled: UserDefaults.standard.speedEnabled
+            )
         )
         popover.behavior = .transient
         popover.contentSize = NSSize(width: 560, height: 280)

@@ -9,6 +9,8 @@ import Charts
 struct ChartPopoverView: View {
 
     @ObservedObject var data: MonitorData
+    var pingEnabled: Bool
+    var speedEnabled: Bool
 
     var body: some View {
         HStack(spacing: 24) {
@@ -28,14 +30,20 @@ struct ChartPopoverView: View {
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(.secondary)
                 Spacer()
-                if let latest = data.latestPing {
+                if !pingEnabled {
+                    Text("OFF")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(.secondary)
+                } else if let latest = data.latestPing {
                     Text("\(latest.value)ms")
                         .font(.system(size: 20, weight: .medium).monospacedDigit())
                         .foregroundColor(.primary)
                 }
             }
 
-            Chart {
+            if !pingEnabled {
+                Spacer()
+            } else { Chart {
                 ForEach(validPings) { point in
                     AreaMark(
                         x: .value("Time", point.date),
@@ -57,6 +65,16 @@ struct ChartPopoverView: View {
                     .interpolationMethod(.catmullRom)
                     .foregroundStyle(.blue)
                     .lineStyle(StrokeStyle(lineWidth: 1.5))
+                }
+
+                // Timeouts
+                ForEach(timeoutPings) { point in
+                    PointMark(
+                        x: .value("Time", point.date),
+                        y: .value("ms", 0)
+                    )
+                    .foregroundStyle(.red.opacity(0.7))
+                    .symbolSize(12)
                 }
 
                 // Warning threshold
@@ -86,6 +104,7 @@ struct ChartPopoverView: View {
                 }
             }
             .chartYAxisLabel("ms", position: .top, alignment: .trailing)
+            }
         }
     }
 
@@ -98,7 +117,11 @@ struct ChartPopoverView: View {
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(.secondary)
                 Spacer()
-                if let latest = data.latestSpeed {
+                if !speedEnabled {
+                    Text("OFF")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(.secondary)
+                } else if let latest = data.latestSpeed {
                     if latest.value >= 100 {
                         Text("\(Int(latest.value)) Mbps")
                             .font(.system(size: 20, weight: .medium).monospacedDigit())
@@ -111,7 +134,9 @@ struct ChartPopoverView: View {
                 }
             }
 
-            Chart {
+            if !speedEnabled {
+                Spacer()
+            } else { Chart {
                 ForEach(validSpeeds) { point in
                     AreaMark(
                         x: .value("Time", point.date),
@@ -133,6 +158,16 @@ struct ChartPopoverView: View {
                     .interpolationMethod(.catmullRom)
                     .foregroundStyle(.blue)
                     .lineStyle(StrokeStyle(lineWidth: 1.5))
+                }
+
+                // Timeouts/errors
+                ForEach(failedSpeeds) { point in
+                    PointMark(
+                        x: .value("Time", point.date),
+                        y: .value("Mbps", 0)
+                    )
+                    .foregroundStyle(point.value == -2 ? .orange.opacity(0.7) : .red.opacity(0.7))
+                    .symbolSize(12)
                 }
 
                 // Slow threshold
@@ -162,6 +197,7 @@ struct ChartPopoverView: View {
                 }
             }
             .chartYAxisLabel("Mbps", position: .top, alignment: .trailing)
+            }
         }
     }
 
@@ -171,8 +207,16 @@ struct ChartPopoverView: View {
         data.pingHistory.filter { $0.value >= 0 }
     }
 
+    private var timeoutPings: [TimestampedPing] {
+        data.pingHistory.filter { $0.value < 0 }
+    }
+
     private var validSpeeds: [TimestampedSpeed] {
         data.speedHistory.filter { $0.value >= 0 }
+    }
+
+    private var failedSpeeds: [TimestampedSpeed] {
+        data.speedHistory.filter { $0.value < 0 }
     }
 
     private func pingColor(_ ms: Int) -> Color {

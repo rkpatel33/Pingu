@@ -16,21 +16,21 @@ class ChartView: NSView {
     // MARK: - Public Properties
 
     public var desiredWidth: CGFloat {
-        var width: CGFloat = iconSize
+        var width: CGFloat = iconSize + iconMargin
 
-        if pingEnabled || speedEnabled {
-            width += iconMargin
-        }
-
+        // Ping section
         if pingEnabled {
             width += pingBaseLineViewWidth + pingLabelMargin + pingLabel.frame.width
+        } else {
+            width += pingLabel.frame.width
         }
 
+        // Gap + speed section
+        width += sectionGap
         if speedEnabled {
-            if pingEnabled {
-                width += sectionGap
-            }
             width += speedBaseLineViewWidth + speedLabelMargin + speedLabel.frame.width
+        } else {
+            width += speedLabel.frame.width
         }
 
         return width
@@ -194,7 +194,8 @@ class ChartView: NSView {
 
     public func resetPing() {
 
-        pingLabel.stringValue = "n/a"
+        pingLabel.stringValue = pingEnabled ? "n/a" : "OFF"
+        pingLabel.sizeToFit()
         pingResults = Array(repeating: .responseInMilliseconds(0), count: 6)
         resetPingBarViews()
 
@@ -202,7 +203,8 @@ class ChartView: NSView {
 
     public func resetSpeed() {
 
-        speedLabel.stringValue = "n/a"
+        speedLabel.stringValue = speedEnabled ? "n/a" : "OFF"
+        speedLabel.sizeToFit()
         speedResults = Array(repeating: .speedInMbps(0), count: 6)
         resetSpeedBarViews()
 
@@ -348,24 +350,47 @@ class ChartView: NSView {
 
     fileprivate func updateVisibility() {
 
-        // Ping views
-        pingLabel.isHidden = !pingEnabled
+        // Ping chart elements (baseline + bars)
         pingBaselineView.isHidden = !pingEnabled
         pingChartBarViews.forEach { $0.isHidden = !pingEnabled }
 
-        // Speed views
-        speedLabel.isHidden = !speedEnabled
+        // Speed chart elements (baseline + bars)
         speedBaselineView.isHidden = !speedEnabled
         speedChartBarViews.forEach { $0.isHidden = !speedEnabled }
 
-        // Update constraints — charts are always anchored to the right of the icon
-        if pingEnabled && speedEnabled {
+        // Labels are always visible — show "OFF" when disabled
+        if !pingEnabled {
+            pingLabel.stringValue = "OFF"
+            pingLabel.sizeToFit()
+        }
+        if !speedEnabled {
+            speedLabel.stringValue = "OFF"
+            speedLabel.sizeToFit()
+        }
+
+        // Ping label position
+        if pingEnabled {
             pingBaselineView.snp.remakeConstraints { m in
                 m.height.equalTo(1)
                 m.width.equalTo(pingBaseLineViewWidth)
                 m.bottom.equalTo(self).offset(-4)
                 m.left.equalTo(iconView.snp.right).offset(iconMargin)
             }
+            pingLabel.snp.remakeConstraints { m in
+                m.height.equalTo(16)
+                m.centerY.equalTo(self).offset(1.5)
+                m.left.equalTo(pingBaselineView.snp.right).offset(pingLabelMargin)
+            }
+        } else {
+            pingLabel.snp.remakeConstraints { m in
+                m.height.equalTo(16)
+                m.centerY.equalTo(self).offset(1.5)
+                m.left.equalTo(iconView.snp.right).offset(iconMargin)
+            }
+        }
+
+        // Speed label position
+        if speedEnabled {
             speedBaselineView.snp.remakeConstraints { m in
                 m.height.equalTo(1)
                 m.width.equalTo(speedBaseLineViewWidth)
@@ -377,27 +402,13 @@ class ChartView: NSView {
                 m.centerY.equalTo(self).offset(1.5)
                 m.left.equalTo(speedBaselineView.snp.right).offset(speedLabelMargin)
             }
-        } else if pingEnabled {
-            pingBaselineView.snp.remakeConstraints { m in
-                m.height.equalTo(1)
-                m.width.equalTo(pingBaseLineViewWidth)
-                m.bottom.equalTo(self).offset(-4)
-                m.left.equalTo(iconView.snp.right).offset(iconMargin)
-            }
-        } else if speedEnabled {
-            speedBaselineView.snp.remakeConstraints { m in
-                m.height.equalTo(1)
-                m.width.equalTo(speedBaseLineViewWidth)
-                m.bottom.equalTo(self).offset(-4)
-                m.left.equalTo(iconView.snp.right).offset(iconMargin)
-            }
+        } else {
             speedLabel.snp.remakeConstraints { m in
                 m.height.equalTo(16)
                 m.centerY.equalTo(self).offset(1.5)
-                m.left.equalTo(speedBaselineView.snp.right).offset(speedLabelMargin)
+                m.left.equalTo(pingLabel.snp.right).offset(sectionGap)
             }
         }
-        // Both disabled: only the icon shows
 
     }
 
