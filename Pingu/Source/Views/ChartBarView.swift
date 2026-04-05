@@ -63,10 +63,11 @@ class ChartBarView: NSView {
             
         
         case .timeout:
-            
+
             snp.updateConstraints { m in
-                m.height.equalTo(0)
+                m.height.equalTo(12)
             }
+            layer?.backgroundColor = NSColor.systemRed.cgColor
         
         default:
             layer?.backgroundColor = .clear

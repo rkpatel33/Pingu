@@ -18,19 +18,19 @@ class ChartView: NSView {
     public var desiredWidth: CGFloat {
         var width: CGFloat = iconSize + iconMargin
 
-        // Ping section
+        // Ping section (fixed width label)
         if pingEnabled {
-            width += pingBaseLineViewWidth + pingLabelMargin + pingLabel.frame.width
+            width += pingBaseLineViewWidth + pingLabelMargin + pingLabelFixedWidth
         } else {
-            width += pingLabel.frame.width
+            width += pingLabelFixedWidth
         }
 
-        // Gap + speed section
+        // Gap + speed section (fixed width label)
         width += sectionGap
         if speedEnabled {
-            width += speedBaseLineViewWidth + speedLabelMargin + speedLabel.frame.width
+            width += speedBaseLineViewWidth + speedLabelMargin + speedLabelFixedWidth
         } else {
-            width += speedLabel.frame.width
+            width += speedLabelFixedWidth
         }
 
         return width
@@ -57,6 +57,10 @@ class ChartView: NSView {
     fileprivate var pingResults: [PingResult] = Array(repeating: .responseInMilliseconds(0), count: 6)
     fileprivate let pingLabelMargin: CGFloat = 4
     fileprivate let pingBaseLineViewWidth: CGFloat = 23
+    fileprivate let pingLabelFixedWidth: CGFloat = {
+        let font = NSFont.monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        return ceil(("999ms" as NSString).size(withAttributes: [.font: font]).width)
+    }()
 
     // Speed chart
     fileprivate var speedLabel: NSTextField
@@ -65,6 +69,10 @@ class ChartView: NSView {
     fileprivate var speedResults: [SpeedResult] = Array(repeating: .speedInMbps(0), count: 6)
     fileprivate let speedLabelMargin: CGFloat = 4
     fileprivate let speedBaseLineViewWidth: CGFloat = 23
+    fileprivate let speedLabelFixedWidth: CGFloat = {
+        let font = NSFont.monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        return ceil(("99.9M" as NSString).size(withAttributes: [.font: font]).width)
+    }()
 
     // Spacing between ping and speed sections
     fileprivate let sectionGap: CGFloat = 6
@@ -195,7 +203,6 @@ class ChartView: NSView {
     public func resetPing() {
 
         pingLabel.stringValue = pingEnabled ? "n/a" : "OFF"
-        pingLabel.sizeToFit()
         pingResults = Array(repeating: .responseInMilliseconds(0), count: 6)
         resetPingBarViews()
 
@@ -204,7 +211,6 @@ class ChartView: NSView {
     public func resetSpeed() {
 
         speedLabel.stringValue = speedEnabled ? "n/a" : "OFF"
-        speedLabel.sizeToFit()
         speedResults = Array(repeating: .speedInMbps(0), count: 6)
         resetSpeedBarViews()
 
@@ -233,6 +239,7 @@ class ChartView: NSView {
         pingLabel.backgroundColor = .clear
         pingLabel.font = NSFont.monospacedDigitSystemFont(ofSize: 12, weight: .regular)
         pingLabel.textColor = NSColor.secondaryLabelColor
+        pingLabel.alignment = .right
 
         addSubview(pingLabel)
 
@@ -250,6 +257,7 @@ class ChartView: NSView {
 
         pingLabel.snp.makeConstraints { m in
             m.height.equalTo(16)
+            m.width.equalTo(pingLabelFixedWidth)
             m.centerY.equalTo(self).offset(1.5)
             m.left.equalTo(pingBaselineView.snp.right).offset(pingLabelMargin)
         }
@@ -292,6 +300,7 @@ class ChartView: NSView {
         speedLabel.backgroundColor = .clear
         speedLabel.font = NSFont.monospacedDigitSystemFont(ofSize: 12, weight: .regular)
         speedLabel.textColor = NSColor.secondaryLabelColor
+        speedLabel.alignment = .right
 
         addSubview(speedLabel)
 
@@ -309,6 +318,7 @@ class ChartView: NSView {
 
         speedLabel.snp.makeConstraints { m in
             m.height.equalTo(16)
+            m.width.equalTo(speedLabelFixedWidth)
             m.centerY.equalTo(self).offset(1.5)
             m.left.equalTo(speedBaselineView.snp.right).offset(speedLabelMargin)
         }
@@ -361,11 +371,9 @@ class ChartView: NSView {
         // Labels are always visible — show "OFF" when disabled
         if !pingEnabled {
             pingLabel.stringValue = "OFF"
-            pingLabel.sizeToFit()
         }
         if !speedEnabled {
             speedLabel.stringValue = "OFF"
-            speedLabel.sizeToFit()
         }
 
         // Ping label position
@@ -378,12 +386,14 @@ class ChartView: NSView {
             }
             pingLabel.snp.remakeConstraints { m in
                 m.height.equalTo(16)
+                m.width.equalTo(pingLabelFixedWidth)
                 m.centerY.equalTo(self).offset(1.5)
                 m.left.equalTo(pingBaselineView.snp.right).offset(pingLabelMargin)
             }
         } else {
             pingLabel.snp.remakeConstraints { m in
                 m.height.equalTo(16)
+                m.width.equalTo(pingLabelFixedWidth)
                 m.centerY.equalTo(self).offset(1.5)
                 m.left.equalTo(iconView.snp.right).offset(iconMargin)
             }
@@ -399,12 +409,14 @@ class ChartView: NSView {
             }
             speedLabel.snp.remakeConstraints { m in
                 m.height.equalTo(16)
+                m.width.equalTo(speedLabelFixedWidth)
                 m.centerY.equalTo(self).offset(1.5)
                 m.left.equalTo(speedBaselineView.snp.right).offset(speedLabelMargin)
             }
         } else {
             speedLabel.snp.remakeConstraints { m in
                 m.height.equalTo(16)
+                m.width.equalTo(speedLabelFixedWidth)
                 m.centerY.equalTo(self).offset(1.5)
                 m.left.equalTo(pingLabel.snp.right).offset(sectionGap)
             }
@@ -417,7 +429,11 @@ class ChartView: NSView {
         switch pingResult {
 
         case .responseInMilliseconds(let v):
-            pingLabel.stringValue = "\(v)ms"
+            if v >= 1000 {
+                pingLabel.stringValue = String(format: "%.1fs", Double(v) / 1000.0)
+            } else {
+                pingLabel.stringValue = "\(v)ms"
+            }
 
         case .timeout:
             pingLabel.stringValue = "t/o"
@@ -425,8 +441,6 @@ class ChartView: NSView {
         default:
             pingLabel.stringValue = "n/a"
         }
-
-        pingLabel.sizeToFit()
 
     }
 
@@ -448,8 +462,6 @@ class ChartView: NSView {
             speedLabel.stringValue = "lim"
 
         }
-
-        speedLabel.sizeToFit()
 
     }
 
