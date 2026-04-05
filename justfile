@@ -12,13 +12,10 @@ build:
         -derivedDataPath {{build_dir}} \
         CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY=""
 
-# Build and run
-run: build
-    open {{app_path}}
-
-# Install to ~/Applications
-install: build
+# Build, install to ~/Applications, and run
+deploy: build
     cp -R {{app_path}} ~/Applications/
+    open ~/Applications/{{app_name}}.app
 
 # Clean build artifacts
 clean:
