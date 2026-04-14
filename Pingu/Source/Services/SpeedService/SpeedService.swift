@@ -5,13 +5,14 @@
 
 import Foundation
 
-public class SpeedService {
+public class SpeedService: NSObject, URLSessionDataDelegate {
 
     // MARK: - Configuration
 
     private let speedTestURL = "https://speed.cloudflare.com/__down"
-    private let fileSize: Int = 2_000_000 // 2 MB
-    private let timeout: TimeInterval = 15.0
+    private let downloadSize: Int = 1_000_000 // 1 MB
+    private let measurementWindow: TimeInterval = 4.0
+    private let connectTimeout: TimeInterval = 10.0
 
     // MARK: - Properties
 
@@ -23,14 +24,26 @@ public class SpeedService {
 
     private(set) var isRunning: Bool = false
 
+    // Backoff state
+    private var backoffMultiplier: Double = 1.0
+    private let maxBackoffMultiplier: Double = 12.0 // caps at ~60s with 5s base
+
+    // Per-measurement state
+    private var bytesReceived: Int = 0
+    private var downloadStartTime: CFAbsoluteTime = 0
+    private var hasReceivedFirstByte: Bool = false
+    private var measureTimer: Timer?
+    private var hasReported: Bool = false
+
     // MARK: - Init
 
-    public init() {
+    public override init() {
+        super.init()
         let config = URLSessionConfiguration.ephemeral
-        config.timeoutIntervalForRequest = timeout
-        config.timeoutIntervalForResource = timeout
+        config.timeoutIntervalForRequest = connectTimeout
+        config.timeoutIntervalForResource = 30
         config.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
-        self.urlSession = URLSession(configuration: config)
+        urlSession = URLSession(configuration: config, delegate: self, delegateQueue: .main)
     }
 
     // MARK: - Public Methods
@@ -38,98 +51,134 @@ public class SpeedService {
     public func startSpeedTest() {
         guard !isRunning else { return }
         isRunning = true
-
-        // Run first test immediately
         runSpeedTest()
-
-        // Schedule recurring tests
-        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
-            self?.runSpeedTest()
-        }
     }
 
     public func stopSpeedTest() {
         isRunning = false
         timer?.invalidate()
         timer = nil
-        currentTask?.cancel()
-        currentTask = nil
+        cancelMeasurement()
     }
 
     // MARK: - Private Methods
 
     private func runSpeedTest() {
-        guard let url = URL(string: "\(speedTestURL)?bytes=\(fileSize)&t=\(Date().timeIntervalSince1970)") else {
-            observer?(.error)
+        cancelMeasurement()
+
+        guard let url = URL(string: "\(speedTestURL)?bytes=\(downloadSize)&t=\(Date().timeIntervalSince1970)") else {
+            report(.error)
             return
         }
 
         var request = URLRequest(url: url)
         request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
 
-        let startTime = CFAbsoluteTimeGetCurrent()
+        bytesReceived = 0
+        downloadStartTime = 0
+        hasReceivedFirstByte = false
+        hasReported = false
 
-        currentTask = urlSession?.dataTask(with: request) { [weak self] data, response, error in
-            guard let self = self else { return }
+        currentTask = urlSession?.dataTask(with: request)
+        currentTask?.resume()
+    }
 
-            // Check for cancellation
-            if let urlError = error as? URLError, urlError.code == .cancelled {
-                return
-            }
+    private func cancelMeasurement() {
+        measureTimer?.invalidate()
+        measureTimer = nil
+        currentTask?.cancel()
+        currentTask = nil
+    }
 
-            // Check for timeout
-            if let urlError = error as? URLError, urlError.code == .timedOut {
-                DispatchQueue.main.async {
-                    self.observer?(.timeout)
-                }
-                return
-            }
+    private func report(_ result: SpeedResult) {
+        guard !hasReported else { return }
+        hasReported = true
+        cancelMeasurement()
 
-            // Check for other errors
-            if error != nil {
-                DispatchQueue.main.async {
-                    self.observer?(.error)
-                }
-                return
-            }
-
-            // Check HTTP status
-            if let httpResponse = response as? HTTPURLResponse {
-                if httpResponse.statusCode == 429 {
-                    DispatchQueue.main.async {
-                        self.observer?(.rateLimited)
-                    }
-                    return
-                }
-
-                if httpResponse.statusCode != 200 {
-                    DispatchQueue.main.async {
-                        self.observer?(.error)
-                    }
-                    return
-                }
-            }
-
-            // Calculate speed
-            let endTime = CFAbsoluteTimeGetCurrent()
-            let durationSeconds = endTime - startTime
-
-            guard durationSeconds > 0, let data = data, data.count > 0 else {
-                DispatchQueue.main.async {
-                    self.observer?(.error)
-                }
-                return
-            }
-
-            // Calculate Mbps: (bytes * 8) / (seconds * 1_000_000)
-            let mbps = (Double(data.count) * 8.0) / (durationSeconds * 1_000_000.0)
-
-            DispatchQueue.main.async {
-                self.observer?(.speedInMbps(mbps))
-            }
+        if case .rateLimited = result {
+            backoffMultiplier = min(backoffMultiplier * 2, maxBackoffMultiplier)
+        } else {
+            backoffMultiplier = 1.0
         }
 
-        currentTask?.resume()
+        observer?(result)
+        scheduleNextTest()
+    }
+
+    private func reportMeasuredSpeed() {
+        let elapsed = CFAbsoluteTimeGetCurrent() - downloadStartTime
+        guard elapsed > 0, bytesReceived > 0 else {
+            report(.timeout)
+            return
+        }
+        let mbps = (Double(bytesReceived) * 8.0) / (elapsed * 1_000_000.0)
+        report(.speedInMbps(mbps))
+    }
+
+    private func scheduleNextTest() {
+        guard isRunning else { return }
+        let delay = interval * backoffMultiplier
+        timer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { [weak self] _ in
+            self?.runSpeedTest()
+        }
+    }
+
+    // MARK: - URLSessionDataDelegate
+
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask,
+                           didReceive response: URLResponse,
+                           completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+        guard let httpResponse = response as? HTTPURLResponse else {
+            completionHandler(.allow)
+            return
+        }
+
+        if httpResponse.statusCode == 429 {
+            report(.rateLimited)
+            completionHandler(.cancel)
+            return
+        }
+
+        if httpResponse.statusCode != 200 {
+            report(.error)
+            completionHandler(.cancel)
+            return
+        }
+
+        completionHandler(.allow)
+    }
+
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+        bytesReceived += data.count
+
+        if !hasReceivedFirstByte {
+            hasReceivedFirstByte = true
+            downloadStartTime = CFAbsoluteTimeGetCurrent()
+
+            measureTimer = Timer.scheduledTimer(withTimeInterval: measurementWindow, repeats: false) { [weak self] _ in
+                self?.reportMeasuredSpeed()
+            }
+        }
+    }
+
+    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        if hasReported { return }
+
+        if let urlError = error as? URLError, urlError.code == .cancelled {
+            return
+        }
+
+        if error != nil {
+            if bytesReceived > 0 {
+                reportMeasuredSpeed()
+            } else {
+                report(.timeout)
+            }
+            return
+        }
+
+        // Download completed before measurement window elapsed
+        reportMeasuredSpeed()
     }
 
     deinit {
