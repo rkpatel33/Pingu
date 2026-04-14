@@ -59,6 +59,7 @@ public class SpeedService: NSObject, URLSessionDataDelegate {
         timer?.invalidate()
         timer = nil
         cancelMeasurement()
+        backoffMultiplier = 1.0
     }
 
     // MARK: - Private Methods
