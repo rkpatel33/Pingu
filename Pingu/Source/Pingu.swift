@@ -85,6 +85,13 @@ class Pingu {
 
         let menu = NSMenu()
 
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"
+        let versionItem = NSMenuItem(title: "Pingu v\(version) (\(build))", action: nil, keyEquivalent: "")
+        versionItem.isEnabled = false
+        menu.addItem(versionItem)
+        menu.addItem(.separator())
+
         if !savedHosts.hosts.isEmpty {
 
             for host in savedHosts.hosts {
