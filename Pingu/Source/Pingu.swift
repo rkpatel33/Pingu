@@ -85,13 +85,6 @@ class Pingu {
 
         let menu = NSMenu()
 
-        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
-        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"
-        let versionItem = NSMenuItem(title: "Pingu v\(version) (\(build))", action: nil, keyEquivalent: "")
-        versionItem.isEnabled = false
-        menu.addItem(versionItem)
-        menu.addItem(.separator())
-
         if !savedHosts.hosts.isEmpty {
 
             for host in savedHosts.hosts {
@@ -166,6 +159,14 @@ class Pingu {
         quitMenuItem.target = self
 
         menu.addItem(launchAtLogin)
+        menu.addItem(.separator())
+
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"
+        let versionItem = NSMenuItem(title: "v\(version) (\(build))", action: nil, keyEquivalent: "")
+        versionItem.isEnabled = false
+        menu.addItem(versionItem)
+
         menu.addItem(quitMenuItem)
 
         return menu
@@ -276,7 +277,7 @@ class Pingu {
     fileprivate func showMenu() {
         let menu = buildMenu()
         if let button = statusItem.button {
-            menu.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.height + 5), in: button)
+            menu.popUp(positioning: menu.items.first, at: NSPoint(x: 0, y: button.bounds.height + 5), in: button)
         }
     }
 
