@@ -37,8 +37,20 @@
 		B1E5A2E12439FE3400514EB3 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B1E5A2DF2439FE3400514EB3 /* MainMenu.xib */; };
 		B1E5A2E82439FEF000514EB3 /* PinguLauncher.app in Copy launch helper */ = {isa = PBXBuildFile; fileRef = B1E5A2D92439FE3300514EB3 /* PinguLauncher.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B1E5A2EB2439FF2500514EB3 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1E5A2EA2439FF2500514EB3 /* ServiceManagement.framework */; };
+		BAB7C53460DA97A5D42856B9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94A0375934BF1AE4BE3F47D7 /* Foundation.framework */; };
 		E398E45579E4316BFA3F9CFD /* SpeedResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E206C61F810897DAA9FB9EB /* SpeedResult.swift */; };
+		ED2DD1D6BC79DAEE13EAE831 /* SpeedServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 464CBCA97730BCD6B0E1DE90 /* SpeedServiceTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		68B6E5C2E4ECF238A98E1565 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B1228907243630A300FACD69 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B122890E243630A300FACD69;
+			remoteInfo = Pingu;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		B1E5A2E72439FECB00514EB3 /* Copy launch helper */ = {
@@ -56,7 +68,10 @@
 
 /* Begin PBXFileReference section */
 		3E206C61F810897DAA9FB9EB /* SpeedResult.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpeedResult.swift; sourceTree = "<group>"; };
+		464CBCA97730BCD6B0E1DE90 /* SpeedServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpeedServiceTests.swift; sourceTree = "<group>"; };
+		4772C7454A7C2EB404EDE052 /* PinguTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PinguTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F8447D0B1A55432C6B85BCB /* MonitorData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MonitorData.swift; path = Pingu/Source/Models/MonitorData.swift; sourceTree = SOURCE_ROOT; };
+		94A0375934BF1AE4BE3F47D7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		9573FC91DACE3FAB74B53108 /* SpeedService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpeedService.swift; sourceTree = "<group>"; };
 		B122890F243630A300FACD69 /* Pingu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pingu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1228912243630A300FACD69 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -92,6 +107,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		794B5BE7C093E06907DAF9ED /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BAB7C53460DA97A5D42856B9 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B122890C243630A300FACD69 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -111,6 +134,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7207D95523D83CF2F320D21C /* PinguTests */ = {
+			isa = PBXGroup;
+			children = (
+				464CBCA97730BCD6B0E1DE90 /* SpeedServiceTests.swift */,
+			);
+			name = PinguTests;
+			path = PinguTests;
+			sourceTree = "<group>";
+		};
+		A3F168C48B570117AF69DBCB /* OS X */ = {
+			isa = PBXGroup;
+			children = (
+				94A0375934BF1AE4BE3F47D7 /* Foundation.framework */,
+			);
+			name = "OS X";
+			sourceTree = "<group>";
+		};
 		B1228906243630A300FACD69 = {
 			isa = PBXGroup;
 			children = (
@@ -118,6 +158,7 @@
 				B1E5A2DA2439FE3300514EB3 /* PinguLauncher */,
 				B1228910243630A300FACD69 /* Products */,
 				B1E5A2E92439FF2500514EB3 /* Frameworks */,
+				7207D95523D83CF2F320D21C /* PinguTests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -126,6 +167,7 @@
 			children = (
 				B122890F243630A300FACD69 /* Pingu.app */,
 				B1E5A2D92439FE3300514EB3 /* PinguLauncher.app */,
+				4772C7454A7C2EB404EDE052 /* PinguTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -275,6 +317,7 @@
 			isa = PBXGroup;
 			children = (
 				B1E5A2EA2439FF2500514EB3 /* ServiceManagement.framework */,
+				A3F168C48B570117AF69DBCB /* OS X */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -291,6 +334,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		5A56E74B6FBB3F44437B9A86 /* PinguTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 696732E373B5B49938BF8A73 /* Build configuration list for PBXNativeTarget "PinguTests" */;
+			buildPhases = (
+				4D6797AAC492BF20910B3F78 /* Sources */,
+				794B5BE7C093E06907DAF9ED /* Frameworks */,
+				E84B3954D406465D99F54EA7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7714587C173AEBADC3C34EEF /* PBXTargetDependency */,
+			);
+			name = PinguTests;
+			productName = PinguTests;
+			productReference = 4772C7454A7C2EB404EDE052 /* PinguTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		B122890E243630A300FACD69 /* Pingu */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B122891D243630A300FACD69 /* Build configuration list for PBXNativeTarget "Pingu" */;
@@ -365,6 +426,7 @@
 			targets = (
 				B122890E243630A300FACD69 /* Pingu */,
 				B1E5A2D82439FE3300514EB3 /* PinguLauncher */,
+				5A56E74B6FBB3F44437B9A86 /* PinguTests */,
 			);
 		};
 /* End PBXProject section */
@@ -390,9 +452,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E84B3954D406465D99F54EA7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		4D6797AAC492BF20910B3F78 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ED2DD1D6BC79DAEE13EAE831 /* SpeedServiceTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B122890B243630A300FACD69 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -431,6 +508,15 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		7714587C173AEBADC3C34EEF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Pingu;
+			target = B122890E243630A300FACD69 /* Pingu */;
+			targetProxy = 68B6E5C2E4ECF238A98E1565 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		B1228916243630A300FACD69 /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
@@ -451,6 +537,23 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		15BBD50A8A451D2A90481AEB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_IDENTITY = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pingu.PinguTests;
+				PRODUCT_MODULE_NAME = PinguTests;
+				PRODUCT_NAME = PinguTests;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Pingu.app/Contents/MacOS/Pingu";
+			};
+			name = Debug;
+		};
 		B122891B243630A300FACD69 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -654,9 +757,35 @@
 			};
 			name = Release;
 		};
+		FBC653369A7047D43755896C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_IDENTITY = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pingu.PinguTests;
+				PRODUCT_MODULE_NAME = PinguTests;
+				PRODUCT_NAME = PinguTests;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Pingu.app/Contents/MacOS/Pingu";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		696732E373B5B49938BF8A73 /* Build configuration list for PBXNativeTarget "PinguTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FBC653369A7047D43755896C /* Release */,
+				15BBD50A8A451D2A90481AEB /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		B122890A243630A300FACD69 /* Build configuration list for PBXProject "Pingu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

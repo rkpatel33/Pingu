@@ -25,15 +25,15 @@ public class SpeedService: NSObject, URLSessionDataDelegate {
     private(set) var isRunning: Bool = false
 
     // Backoff state
-    private var backoffMultiplier: Double = 1.0
-    private let maxBackoffMultiplier: Double = 12.0 // caps at ~60s with 5s base
+    var backoffMultiplier: Double = 1.0
+    let maxBackoffMultiplier: Double = 12.0 // caps at ~60s with 5s base
 
     // Per-measurement state
-    private var bytesReceived: Int = 0
-    private var downloadStartTime: CFAbsoluteTime = 0
-    private var hasReceivedFirstByte: Bool = false
+    var bytesReceived: Int = 0
+    var downloadStartTime: CFAbsoluteTime = 0
+    var hasReceivedFirstByte: Bool = false
     private var measureTimer: Timer?
-    private var hasReported: Bool = false
+    var hasReported: Bool = false
 
     // MARK: - Init
 
