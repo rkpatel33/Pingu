@@ -26,11 +26,11 @@ class MonitorData: ObservableObject {
     private let maxAge: TimeInterval = 900 // 15 minutes
 
     var latestPing: TimestampedPing? {
-        pingHistory.last(where: { $0.value >= 0 })
+        pingHistory.last
     }
 
     var latestSpeed: TimestampedSpeed? {
-        speedHistory.last(where: { $0.value >= 0 })
+        speedHistory.last
     }
 
     func addPing(_ result: PingResult) {

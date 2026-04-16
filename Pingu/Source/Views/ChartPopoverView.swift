@@ -35,9 +35,15 @@ struct ChartPopoverView: View {
                         .font(.system(size: 20, weight: .medium))
                         .foregroundColor(.secondary)
                 } else if let latest = data.latestPing {
-                    Text("\(latest.value)ms")
-                        .font(.system(size: 20, weight: .medium).monospacedDigit())
-                        .foregroundColor(.primary)
+                    if latest.value < 0 {
+                        Text("Timeout")
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundColor(.red)
+                    } else {
+                        Text("\(latest.value)ms")
+                            .font(.system(size: 20, weight: .medium).monospacedDigit())
+                            .foregroundColor(.primary)
+                    }
                 }
             }
 
@@ -73,8 +79,8 @@ struct ChartPopoverView: View {
                         x: .value("Time", point.date),
                         y: .value("ms", 0)
                     )
-                    .foregroundStyle(.red.opacity(0.7))
-                    .symbolSize(12)
+                    .foregroundStyle(.red.opacity(0.8))
+                    .symbolSize(30)
                 }
 
                 // Warning threshold
@@ -122,7 +128,11 @@ struct ChartPopoverView: View {
                         .font(.system(size: 20, weight: .medium))
                         .foregroundColor(.secondary)
                 } else if let latest = data.latestSpeed {
-                    if latest.value >= 100 {
+                    if latest.value < 0 {
+                        Text(latest.value == -2 ? "Rate Limited" : "Timeout")
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundColor(latest.value == -2 ? .orange : .red)
+                    } else if latest.value >= 100 {
                         Text("\(Int(latest.value)) Mbps")
                             .font(.system(size: 20, weight: .medium).monospacedDigit())
                             .foregroundColor(.primary)
@@ -166,8 +176,8 @@ struct ChartPopoverView: View {
                         x: .value("Time", point.date),
                         y: .value("Mbps", 0)
                     )
-                    .foregroundStyle(point.value == -2 ? .orange.opacity(0.7) : .red.opacity(0.7))
-                    .symbolSize(12)
+                    .foregroundStyle(point.value == -2 ? .orange.opacity(0.8) : .red.opacity(0.8))
+                    .symbolSize(30)
                 }
 
                 // Slow threshold
