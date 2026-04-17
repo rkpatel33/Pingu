@@ -52,22 +52,14 @@ class ChartBarView: NSView {
                 m.height.equalTo(min(scaledValue, 12))
             }
             
-            switch value {
-            case 0..<80:
-                layer?.backgroundColor = NSColor.labelColor.cgColor
-            case 80..<150:
-                layer?.backgroundColor = NSColor.systemOrange.cgColor
-            default:
-                layer?.backgroundColor = NSColor.systemRed.cgColor
-            }
+            layer?.backgroundColor = NSColor.labelColor.cgColor
             
         
         case .timeout:
 
             snp.updateConstraints { m in
-                m.height.equalTo(12)
+                m.height.equalTo(0)
             }
-            layer?.backgroundColor = NSColor.systemRed.cgColor
         
         default:
             layer?.backgroundColor = .clear
