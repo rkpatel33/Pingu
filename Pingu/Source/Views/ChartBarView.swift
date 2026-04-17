@@ -94,14 +94,7 @@ class ChartBarView: NSView {
                 m.height.equalTo(min(scaledValue, 12))
             }
 
-            switch mbps {
-            case 25...:
-                layer?.backgroundColor = NSColor.labelColor.cgColor
-            case 10..<25:
-                layer?.backgroundColor = NSColor.systemOrange.cgColor
-            default:
-                layer?.backgroundColor = NSColor.systemRed.cgColor
-            }
+            layer?.backgroundColor = NSColor.labelColor.cgColor
 
         case .timeout, .error:
 
