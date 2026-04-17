@@ -82,43 +82,20 @@ class ChartView: NSView {
     fileprivate let iconSize: CGFloat = 16
     fileprivate let iconMargin: CGFloat = 6
 
-    // Legacy aliases for compatibility
-    fileprivate var label: NSTextField { pingLabel }
-    fileprivate var baselineView: NSView { pingBaselineView }
-    fileprivate var chartBarViews: [ChartBarView] { pingChartBarViews }
-    fileprivate var results: [PingResult] {
-        get { pingResults }
-        set { pingResults = newValue }
-    }
-    fileprivate let baseLineViewMargin: CGFloat = 4
-    fileprivate let baseLineViewWidth: CGFloat = 23
-
     fileprivate var avgResponseTime: Float {
-
-        var values: [Int] = []
-
-        pingResults.forEach { r in
-            if case .responseInMilliseconds(let v) = r {
-                values.append(v)
-            }
+        let values = pingResults.compactMap { r -> Int? in
+            if case .responseInMilliseconds(let v) = r { return v }
+            return nil
         }
-
         return values.isEmpty ? 0 : Float(values.reduce(0, +) / values.count)
-
     }
 
     fileprivate var avgSpeed: Double {
-
-        var values: [Double] = []
-
-        speedResults.forEach { r in
-            if case .speedInMbps(let v) = r {
-                values.append(v)
-            }
+        let values = speedResults.compactMap { r -> Double? in
+            if case .speedInMbps(let v) = r { return v }
+            return nil
         }
-
         return values.isEmpty ? 0 : values.reduce(0, +) / Double(values.count)
-
     }
     
     // MARK: - Lifecycle

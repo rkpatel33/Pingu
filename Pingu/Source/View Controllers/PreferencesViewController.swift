@@ -9,7 +9,7 @@
 import Foundation
 import Cocoa
 
-protocol PreferencesViewControllerDelegate: class {
+protocol PreferencesViewControllerDelegate: AnyObject {
     func preferencesViewController(_ ctrl: PreferencesViewController, didAddHost host: String, interval: PingInterval)
 }
 
@@ -34,7 +34,7 @@ class PreferencesViewController: NSViewController {
         
         let (_, error) = pingService.getAddress(forHost: host)
         
-        if let _ = error {
+        if error != nil {
             
             errorLabel.stringValue = "Error resolving host"
             errorLabel.isHidden = false

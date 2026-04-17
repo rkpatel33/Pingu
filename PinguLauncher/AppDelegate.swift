@@ -24,7 +24,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     fileprivate func startPinguIfNeeded() {
         
         let runningApps = NSWorkspace.shared.runningApplications
-        let isRunning = !runningApps.filter { $0.bundleIdentifier == pinguBundleId }.isEmpty
+        let isRunning = runningApps.contains { $0.bundleIdentifier == pinguBundleId }
         
         if !isRunning {
             

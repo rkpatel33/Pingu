@@ -229,20 +229,4 @@ struct ChartPopoverView: View {
         data.speedHistory.filter { $0.value < 0 }
     }
 
-    private func pingColor(_ ms: Int) -> Color {
-        switch ms {
-        case 0..<80: return .primary
-        case 80..<150: return .orange
-        default: return .red
-        }
-    }
-
-    private func speedColor(_ mbps: Double) -> Color {
-        switch mbps {
-        case 25...: return .primary
-        case 10..<25: return .orange
-        default: return .red
-        }
-    }
-
 }

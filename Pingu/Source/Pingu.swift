@@ -37,23 +37,14 @@ class Pingu {
         chartView.pingEnabled = UserDefaults.standard.pingEnabled
         chartView.speedEnabled = UserDefaults.standard.speedEnabled
 
-        if let selectedHost = savedHosts.selectedHost {
-
-            if UserDefaults.standard.pingEnabled {
-                startPinging(host: selectedHost)
-            }
-
-        } else {
-
+        if savedHosts.selectedHost == nil {
             let defaultHost = Host(host: "www.google.com", interval: .seconds(1))
-
             savedHosts.add(defaultHost)
             savedHosts.save(toStore: UserDefaults.standard)
+        }
 
-            if UserDefaults.standard.pingEnabled {
-                startPinging(host: defaultHost)
-            }
-
+        if let host = savedHosts.selectedHost, UserDefaults.standard.pingEnabled {
+            startPinging(host: host)
         }
 
         // Start speed testing if enabled
@@ -79,8 +70,8 @@ class Pingu {
 
     }
     
-    // MARK: - Private Properties
-    
+    // MARK: - Private Methods
+
     fileprivate func buildMenu() -> NSMenu {
 
         let menu = NSMenu()
@@ -111,7 +102,7 @@ class Pingu {
 
         } else {
 
-            if let _ = savedHosts.selectedHost {
+            if savedHosts.selectedHost != nil {
 
                 let item = NSMenuItem(title: "Resume", action: #selector(self.didSelectStartPinging), keyEquivalent: "")
                 item.target = self
@@ -201,7 +192,7 @@ class Pingu {
                                  interval: host.interval.timeInterval)
         { [weak self] pingResult in
             
-            DispatchQueue.main.sync {
+            DispatchQueue.main.async {
                 self?.chartView.addResult(pingResult)
                 self?.monitorData.addPing(pingResult)
                 self?.statusItem.length = self?.chartView.desiredWidth ?? 0
@@ -296,8 +287,8 @@ class Pingu {
         savedHosts.setSelected(item.host)
         savedHosts.save(toStore: UserDefaults.standard)
         
-        startPinging(host: item.host)
         chartView.reset()
+        startPinging(host: item.host)
         
     }
     
@@ -377,8 +368,9 @@ extension Pingu: PreferencesViewControllerDelegate {
         savedHosts.add(h)
         savedHosts.save(toStore: UserDefaults.standard)
         
+        chartView.reset()
         startPinging(host: h)
-        
+
         hidePreferencesPopover()
         
     }

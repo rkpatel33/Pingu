@@ -44,7 +44,7 @@ class MonitorData: ObservableObject {
             return
         }
         pingHistory.append(entry)
-        trimOldEntries()
+        trimPingHistory()
     }
 
     func addSpeed(_ result: SpeedResult) {
@@ -58,12 +58,16 @@ class MonitorData: ObservableObject {
             entry = TimestampedSpeed(date: Date(), value: -2)
         }
         speedHistory.append(entry)
-        trimOldEntries()
+        trimSpeedHistory()
     }
 
-    private func trimOldEntries() {
+    private func trimPingHistory() {
         let cutoff = Date().addingTimeInterval(-maxAge)
         pingHistory.removeAll { $0.date < cutoff }
+    }
+
+    private func trimSpeedHistory() {
+        let cutoff = Date().addingTimeInterval(-maxAge)
         speedHistory.removeAll { $0.date < cutoff }
     }
 

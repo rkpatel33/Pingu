@@ -19,6 +19,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         
+        UserDefaults.standard.register(defaults: ["pingEnabled": true, "speedEnabled": true])
         pingu = Pingu()
         killLaunchHelperIfNeccessary()
         
@@ -33,7 +34,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     fileprivate func killLaunchHelperIfNeccessary() {
         
         let runningApps = NSWorkspace.shared.runningApplications
-        let isRunning = !runningApps.filter { $0.bundleIdentifier == pinguLauncherBundleId }.isEmpty
+        let isRunning = runningApps.contains { $0.bundleIdentifier == pinguLauncherBundleId }
         
         if isRunning {
             DistributedNotificationCenter.default().post(name: .killPinguLauncher,

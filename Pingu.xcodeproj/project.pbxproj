@@ -40,6 +40,10 @@
 		BAB7C53460DA97A5D42856B9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94A0375934BF1AE4BE3F47D7 /* Foundation.framework */; };
 		E398E45579E4316BFA3F9CFD /* SpeedResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E206C61F810897DAA9FB9EB /* SpeedResult.swift */; };
 		ED2DD1D6BC79DAEE13EAE831 /* SpeedServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 464CBCA97730BCD6B0E1DE90 /* SpeedServiceTests.swift */; };
+		B04CC7390349CE268A32AA19 /* PingServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B82BB669875AC0279627A7D /* PingServiceTests.swift */; };
+		739112562F4C41F2C2062440 /* SavedHostsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77FFDBE2FA7C9B6F0A9AC0C2 /* SavedHostsTests.swift */; };
+		A83C49B118E14C690A7581B2 /* MonitorDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6458B21644E6FA28E2D6534E /* MonitorDataTests.swift */; };
+		700692549BFA3B59862ED605 /* RescaleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C5BA6A17AC0263C21889E2 /* RescaleTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +73,10 @@
 /* Begin PBXFileReference section */
 		3E206C61F810897DAA9FB9EB /* SpeedResult.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpeedResult.swift; sourceTree = "<group>"; };
 		464CBCA97730BCD6B0E1DE90 /* SpeedServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpeedServiceTests.swift; sourceTree = "<group>"; };
+		0B82BB669875AC0279627A7D /* PingServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PingServiceTests.swift; sourceTree = "<group>"; };
+		77FFDBE2FA7C9B6F0A9AC0C2 /* SavedHostsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SavedHostsTests.swift; sourceTree = "<group>"; };
+		6458B21644E6FA28E2D6534E /* MonitorDataTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonitorDataTests.swift; sourceTree = "<group>"; };
+		36C5BA6A17AC0263C21889E2 /* RescaleTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RescaleTests.swift; sourceTree = "<group>"; };
 		4772C7454A7C2EB404EDE052 /* PinguTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PinguTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F8447D0B1A55432C6B85BCB /* MonitorData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MonitorData.swift; path = Pingu/Source/Models/MonitorData.swift; sourceTree = SOURCE_ROOT; };
 		94A0375934BF1AE4BE3F47D7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
@@ -138,6 +146,10 @@
 			isa = PBXGroup;
 			children = (
 				464CBCA97730BCD6B0E1DE90 /* SpeedServiceTests.swift */,
+				0B82BB669875AC0279627A7D /* PingServiceTests.swift */,
+				77FFDBE2FA7C9B6F0A9AC0C2 /* SavedHostsTests.swift */,
+				6458B21644E6FA28E2D6534E /* MonitorDataTests.swift */,
+				36C5BA6A17AC0263C21889E2 /* RescaleTests.swift */,
 			);
 			name = PinguTests;
 			path = PinguTests;
@@ -467,6 +479,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED2DD1D6BC79DAEE13EAE831 /* SpeedServiceTests.swift in Sources */,
+				B04CC7390349CE268A32AA19 /* PingServiceTests.swift in Sources */,
+				739112562F4C41F2C2062440 /* SavedHostsTests.swift in Sources */,
+				A83C49B118E14C690A7581B2 /* MonitorDataTests.swift in Sources */,
+				700692549BFA3B59862ED605 /* RescaleTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -18,27 +18,17 @@ class SavedHosts: Codable {
     
     public private(set) var hosts: [Host] = []
     public var selectedHost: Host? {
-        return hosts.filter({ $0.selected == true }).first
+        hosts.first { $0.selected }
     }
     
     // MARK: - Static Methods
     
     static func load(fromStore store: UserDefaults) -> SavedHosts {
-        
-        if let hosts = store.object(forKey: SavedHosts.storeKey) as? Data {
-        
-            let decoder = JSONDecoder()
-            
-            if let savedHosts = try? decoder.decode(SavedHosts.self, from: hosts) {
-                return savedHosts
-            } else {
-                return SavedHosts()
-            }
-            
-        } else {
+        guard let data = store.data(forKey: SavedHosts.storeKey),
+              let saved = try? JSONDecoder().decode(SavedHosts.self, from: data) else {
             return SavedHosts()
         }
-        
+        return saved
     }
     
     // MARK: - Public Methods
@@ -65,10 +55,8 @@ class SavedHosts: Codable {
     }
     
     public func setSelected(_ selectedHost: Host) {
-        
-        let _ = hosts.map({ $0.selected = false })
-        let _ = hosts.filter({ $0 == selectedHost }).first?.selected = true
-        
+        hosts.forEach { $0.selected = false }
+        hosts.first(where: { $0 == selectedHost })?.selected = true
     }
     
 }

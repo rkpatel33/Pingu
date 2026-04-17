@@ -46,7 +46,7 @@ class ChartBarView: NSView {
         
         case .responseInMilliseconds(let value):
         
-            let scaledValue = Rescale(from: (0, Float(avgResponseTime * 2)), to: (1, 12)).rescale(Float(value))
+            let scaledValue = rescale(Float(value), from: (0, Float(avgResponseTime * 2)), to: (1, 12))
             
             snp.updateConstraints { m in
                 m.height.equalTo(min(scaledValue, 12))
@@ -96,7 +96,7 @@ class ChartBarView: NSView {
 
             // Scale speed to bar height (0-12px range)
             let maxScale = max(avgSpeed * 2, 50) // At least 50 Mbps scale
-            let scaledValue = Rescale(from: (0, Float(maxScale)), to: (1, 12)).rescale(Float(mbps))
+            let scaledValue = rescale(Float(mbps), from: (0, Float(maxScale)), to: (1, 12))
 
             snp.updateConstraints { m in
                 m.height.equalTo(min(scaledValue, 12))
