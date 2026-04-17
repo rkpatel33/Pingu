@@ -238,7 +238,7 @@ class ChartView: NSView {
         pingLabel.isEditable = false
         pingLabel.backgroundColor = .clear
         pingLabel.font = NSFont.monospacedDigitSystemFont(ofSize: 12, weight: .regular)
-        pingLabel.textColor = NSColor.secondaryLabelColor
+        pingLabel.textColor = NSColor.labelColor
         pingLabel.alignment = .right
 
         addSubview(pingLabel)
@@ -299,7 +299,7 @@ class ChartView: NSView {
         speedLabel.isEditable = false
         speedLabel.backgroundColor = .clear
         speedLabel.font = NSFont.monospacedDigitSystemFont(ofSize: 12, weight: .regular)
-        speedLabel.textColor = NSColor.secondaryLabelColor
+        speedLabel.textColor = NSColor.labelColor
         speedLabel.alignment = .right
 
         addSubview(speedLabel)
